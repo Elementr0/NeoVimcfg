@@ -1,4 +1,7 @@
+
 -- Установка lazy.nvim, если он отсутствует
+vim.opt.number =  true
+vim.opt.relativenumber  = true
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -134,17 +137,20 @@ require("lazy").setup({
     end,
   },
 
-  -- Выдвижной терминал
+   -- Выдвижной терминал
   {
     'akinsho/toggleterm.nvim',
     version = "*",
     config = function()
       require("toggleterm").setup({
         size = 15,                -- высота нижнего терминала
-        open_mapping = [[<leader>t]], -- горячая клавиша для открытия/заключения (Пробел + t)
+        -- Убираем open_mapping, чтобы он не перехватывал клавиши в режиме вставки
         direction = 'horizontal', 
         shade_terminals = true,
       })
+
+      -- Назначаем открытие/закрытие терминала только для NORMAL режима (<leader>t)
+      vim.keymap.set('n', '<leader>t', '<cmd>ToggleTerm<CR>', { noremap = true, silent = true })
 
       -- Удобный выход из режима терминала в нормальный режим по Esc
       function _G.set_terminal_keymaps()
