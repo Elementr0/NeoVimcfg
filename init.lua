@@ -231,4 +231,32 @@ require("lazy").setup({
       })
     end,
   },
+    -- Горячие клавиши для работы с LSP (переходы по коду)
+  {
+    "neovim/nvim-lspconfig",
+    config = function()
+      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      
+      vim.lsp.config('clangd', {
+        cmd = { 'clangd' },
+        capabilities = capabilities,
+      })
+      vim.lsp.enable('clangd')
+
+      -- Настройка горячих клавиш при подключении LSP к буферу
+      vim.api.nvim_create_autocmd('LspAttach', {
+        callback = function(args)
+          local opts = { buffer = args.buf }
+          -- Переход к определению (включая #include файлы)
+          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
+          -- Показать информацию о переменной/функции под курсором
+          vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+          -- Переход к объявлению
+          vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
+          -- Поиск всех мест использования (references)
+          vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+        end,
+      })
+    end,
+  },
 })
