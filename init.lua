@@ -1,7 +1,6 @@
-
 -- Установка lazy.nvim, если он отсутствует
-vim.opt.number =  true
-vim.opt.relativenumber  = true
+vim.opt.number = true
+vim.opt.relativenumber = true
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
   vim.fn.system({
@@ -9,64 +8,53 @@ if not vim.loop.fs_stat(lazypath) then
     "clone",
     "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git",
-    "--branch=stable", -- последняя стабильная версия
+    "--branch=stable",
     lazypath,
   })
 end
 vim.opt.rtp:prepend(lazypath)
 
--- Устанавливаем пробел как клавишу лидера (нужно для горячих клавиш вроде <leader>e)
 vim.g.mapleader = " "
 
--- Настройка плагинов через lazy
 require("lazy").setup({
-  -- Тема оформления
   {
     "folke/tokyonight.nvim",
-    lazy = false,    -- загружается сразу при старте
-    priority = 1000, -- загрузить тему в первую очередь
+    lazy = false,
+    priority = 1000,
     config = function()
-      -- Выбор конкретного стиля ("night", "storm" или "moon")
       vim.cmd([[colorscheme tokyonight-night]])
     end,
   },
 
-  -- Строка состояния (lualine) с поддержкой иконок (требует Nerd Font)
   {
-    'nvim-lualine/lualine.nvim',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    "nvim-lualine/lualine.nvim",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
-      require('lualine').setup({
+      require("lualine").setup({
         options = {
-          -- Используем встроенную тему, идеально подходящую под tokyonight
-          theme = 'tokyonight',
-          
-          -- Красивые скругленные разделители по краям блоков
-          section_separators = { left = '', right = '' },
-          component_separators = { left = '', right = '' },
-          
-          -- Отключаем вывод имен файлов в строке, если они дублируются (по желанию)
+          theme = "tokyonight",
+          section_separators = { left = "", right = "" },
+          component_separators = { left = "", right = "" },
           disabled_filetypes = {
             statusline = { "alpha", "lazy", "NvimTree" },
           },
           always_divide_middle = true,
         },
         sections = {
-          lualine_a = { { 'mode', separator = { left = '', right = '' }, right_padding = 2 } },
-          lualine_b = { 'filename', 'branch' },
-          lualine_c = { 'diff' },
-          lualine_x = { 'diagnostics', 'encoding', 'filetype' },
-          lualine_y = { 'progress' },
-          lualine_z = { { 'location', separator = { left = '', right = '' }, left_padding = 2 } },
+          lualine_a = { { "mode", separator = { left = "", right = "" }, right_padding = 2 } },
+          lualine_b = { "filename", "branch" },
+          lualine_c = { "diff" },
+          lualine_x = { "diagnostics", "encoding", "filetype" },
+          lualine_y = { "progress" },
+          lualine_z = { { "location", separator = { left = "", right = "" }, left_padding = 2 } },
         },
       })
     end,
   },
 
-  -- Дерево файлов (Nvim-tree в виде плавающего окна)
   {
-    'nvim-tree/nvim-tree.lua',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("nvim-tree").setup({
         view = {
@@ -81,8 +69,8 @@ require("lazy").setup({
               local center_y = (screen_h - window_h) / 2
 
               return {
-                border = 'rounded',
-                relative = 'editor',
+                border = "rounded",
+                relative = "editor",
                 row = center_y,
                 col = center_x,
                 width = window_w,
@@ -94,32 +82,29 @@ require("lazy").setup({
         },
       })
 
-      -- Горячая клавиша: Пробел + e (открыть/закрыть дерево)
-      vim.keymap.set('n', '<leader>e', ':NvimTreeToggle<CR>', { silent = true, desc = 'Toggle NvimTree Float' })
+      vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", { silent = true, desc = "Toggle NvimTree Float" })
     end,
   },
 
-  -- Умный поиск и навигация (Telescope)
   {
-    'nvim-telescope/telescope.nvim',
-    branch = '0.1.x',
-    dependencies = { 'nvim-lua/plenary.nvim' },
+    "nvim-telescope/telescope.nvim",
+    branch = "0.1.x",
+    dependencies = { "nvim-lua/plenary.nvim" },
     config = function()
-      local builtin = require('telescope.builtin')
+      local builtin = require("telescope.builtin")
 
-      vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = 'Telescope find files' })
-      vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = 'Telescope live grep' })
-      vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = 'Telescope buffers' })
-      vim.keymap.set('n', '<leader>fh', builtin.help_tags, { desc = 'Telescope help tags' })
+      vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Telescope find files" })
+      vim.keymap.set("n", "<leader>fg", builtin.live_grep, { desc = "Telescope live grep" })
+      vim.keymap.set("n", "<leader>fb", builtin.buffers, { desc = "Telescope buffers" })
+      vim.keymap.set("n", "<leader>fh", builtin.help_tags, { desc = "Telescope help tags" })
     end,
   },
 
-  -- Продвинутая подсветка синтаксиса (Treesitter)
   {
     "nvim-treesitter/nvim-treesitter",
     build = ":TSUpdate",
     config = function()
-      vim.api.nvim_create_autocmd('FileType', {
+      vim.api.nvim_create_autocmd("FileType", {
         pattern = { "lua", "c", "cpp", "python", "html", "css", "javascript", "bash", "asm" },
         callback = function()
           pcall(vim.treesitter.start)
@@ -128,41 +113,35 @@ require("lazy").setup({
     end,
   },
 
-  -- Автоматическое закрытие скобок и кавычек
   {
-    'windwp/nvim-autopairs',
+    "windwp/nvim-autopairs",
     event = "InsertEnter",
     config = function()
       require("nvim-autopairs").setup({})
     end,
   },
 
-   -- Выдвижной терминал
   {
-    'akinsho/toggleterm.nvim',
+    "akinsho/toggleterm.nvim",
     version = "*",
     config = function()
       require("toggleterm").setup({
-        size = 15,                -- высота нижнего терминала
-        -- Убираем open_mapping, чтобы он не перехватывал клавиши в режиме вставки
-        direction = 'horizontal', 
+        size = 15,
+        direction = "horizontal",
         shade_terminals = true,
       })
 
-      -- Назначаем открытие/закрытие терминала только для NORMAL режима (<leader>t)
-      vim.keymap.set('n', '<leader>t', '<cmd>ToggleTerm<CR>', { noremap = true, silent = true })
+      vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm<CR>", { noremap = true, silent = true })
 
-      -- Удобный выход из режима терминала в нормальный режим по Esc
       function _G.set_terminal_keymaps()
         local opts = {buffer = 0}
-        vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+        vim.keymap.set("t", "<esc>", [[<C-\><C-n>]], opts)
       end
 
-      vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')
+      vim.cmd("autocmd! TermOpen term://* lua set_terminal_keymaps()")
     end,
   },
 
-  -- Менеджер бинарников (LSP, DAP)
   {
     "williamboman/mason.nvim",
     build = ":MasonUpdate",
@@ -171,7 +150,6 @@ require("lazy").setup({
     end,
   },
 
-  -- Интеграция Mason и LSP
   {
     "williamboman/mason-lspconfig.nvim",
     dependencies = { "williamboman/mason.nvim" },
@@ -182,21 +160,20 @@ require("lazy").setup({
     end,
   },
 
-  -- Настройка языкового сервера для Си/C++ (современный API)
   {
-    "neovim/nvim-lspconfig",
+    "erl-koenig/theme-hub.nvim",
+    dependencies = {
+        "nvim-lua/plenary.nvim",
+        -- Optional: for themes that use lush (will be notified if a theme requires it)
+        -- "rktjmp/lush.nvim"
+    },
     config = function()
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
-      
-      vim.lsp.config('clangd', {
-        cmd = { 'clangd' },
-        capabilities = capabilities,
-      })
-      vim.lsp.enable('clangd')
+        require("theme-hub").setup({
+            -- Configuration options (see below)
+        })
     end,
-  },
+},
 
-  -- Дополнительные фичи для clangd (память структур, переключение заголовочных файлов)
   {
     "p00f/clangd_extensions.nvim",
     ft = { "c", "cpp" },
@@ -205,7 +182,6 @@ require("lazy").setup({
     end,
   },
 
-  -- Движок автодополнения
   {
     "hrsh7th/nvim-cmp",
     dependencies = {
@@ -215,54 +191,106 @@ require("lazy").setup({
       "L3MON4D3/LuaSnip",
     },
     config = function()
-      local cmp = require('cmp')
+      local cmp = require("cmp")
       cmp.setup({
         snippet = {
           expand = function(args)
-            require('luasnip').lsp_expand(args.body)
+            require("luasnip").lsp_expand(args.body)
           end,
         },
         mapping = cmp.mapping.preset.insert({
-          ['<C-Space>'] = cmp.mapping.complete(),
-          ['<CR>'] = cmp.mapping.confirm({ select = true }),
-          ['<Tab>'] = cmp.mapping.select_next_item(),
-          ['<S-Tab>'] = cmp.mapping.select_prev_item(),
+          ["<C-Space>"] = cmp.mapping.complete(),
+          ["<CR>"] = cmp.mapping.confirm({ select = true }),
+          ["<Tab>"] = cmp.mapping.select_next_item(),
+          ["<S-Tab>"] = cmp.mapping.select_prev_item(),
         }),
         sources = cmp.config.sources({
-          { name = 'nvim_lsp' },
-          { name = 'luasnip' },
-          { name = 'buffer' },
-          { name = 'path' },
+          { name = "nvim_lsp" },
+          { name = "luasnip" },
+          { name = "buffer" },
+          { name = "path" },
         })
       })
     end,
   },
-    -- Горячие клавиши для работы с LSP (переходы по коду)
+
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    config = function()
+      local dap = require("dap")
+      local dapui = require("dapui")
+
+      dapui.setup()
+
+      dap.listeners.after.event_initialized["dapui_config"] = function()
+        dapui.open()
+      end
+      dap.listeners.before.event_terminated["dapui_config"] = function()
+        dapui.close()
+      end
+      dap.listeners.before.event_exited["dapui_config"] = function()
+        dapui.close()
+      end
+
+      vim.keymap.set("n", "<leader>du", dapui.toggle, { desc = "Debug: Toggle UI" })
+    end,
+  },
+
   {
     "neovim/nvim-lspconfig",
     config = function()
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
+      local capabilities = require("cmp_nvim_lsp").default_capabilities()
       
-      vim.lsp.config('clangd', {
-        cmd = { 'clangd' },
+      vim.lsp.config("clangd", {
+        cmd = { "clangd" },
         capabilities = capabilities,
       })
-      vim.lsp.enable('clangd')
+      vim.lsp.enable("clangd")
 
-      -- Настройка горячих клавиш при подключении LSP к буферу
-      vim.api.nvim_create_autocmd('LspAttach', {
+      vim.api.nvim_create_autocmd("LspAttach", {
         callback = function(args)
           local opts = { buffer = args.buf }
-          -- Переход к определению (включая #include файлы)
-          vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
-          -- Показать информацию о переменной/функции под курсором
-          vim.keymap.set('n', 'K', vim.lsp.buf.hover, opts)
-          -- Переход к объявлению
-          vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
-          -- Поиск всех мест использования (references)
-          vim.keymap.set('n', 'gr', vim.lsp.buf.references, opts)
+          vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+          vim.keymap.set("n", "gD", vim.lsp.buf.declaration, opts)
+          vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
         end,
       })
+    end,
+  },
+
+  {
+    "mfussenegger/nvim-dap",
+    config = function()
+      local dap = require("dap")
+
+      dap.adapters.gdb = {
+        type = "executable",
+        command = "gdb-multiarch",
+        args = { "-i", "dap" }
+      }
+
+      dap.configurations.c = {
+        {
+          type = "gdb",
+          request = "attach",
+          name = "Connect to OpenOCD (Port 3333)",
+          executable = "${workspaceFolder}/build/stm32h723_baremetal.elf",
+          target = "localhost:3333",
+          cwd = "${workspaceFolder}",
+          initCommands = {
+            "target remote localhost:3333",
+            "monitor reset halt",
+            "load"
+          }
+        },
+      }
+
+      vim.keymap.set("n", "<leader>db", dap.toggle_breakpoint, { desc = "Debug: Toggle Breakpoint" })
+      vim.keymap.set("n", "<leader>dc", dap.continue, { desc = "Debug: Continue" })
+      vim.keymap.set("n", "<leader>di", dap.step_into, { desc = "Debug: Step Into" })
+      vim.keymap.set("n", "<leader>do", dap.step_over, { desc = "Debug: Step Over" })
     end,
   },
 })
